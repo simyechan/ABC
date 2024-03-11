@@ -1,8 +1,8 @@
 import { configDotenv } from 'dotenv'
 import express, { Application, Request, Response } from 'express'
-import { AppDataSoure } from './backend/src/models/dataSource';
+import { AppDataSoure } from './models/dataSource';
 import cors from 'cors';
-import router from './backend/src/routes';
+import router from './routes';
 
 configDotenv();
 const app: Application = express();
