@@ -7,7 +7,6 @@ import router from './routes';
 configDotenv();
 const app: Application = express();
 const port: number = Number(process.env.PORT) || 8000;
-const server = require('http').createServer(app);
 
 // // db설정
 AppDataSoure.initialize()
