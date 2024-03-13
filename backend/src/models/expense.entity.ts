@@ -19,7 +19,7 @@ export default class Expense {
   amount!: number
 
   @Column({type: 'varchar'})
-  default!: string
+  explanation?: string
 
   @Column({type: 'date'})
   date?: Date
