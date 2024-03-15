@@ -3,6 +3,7 @@ import express, { Application, Request, Response } from 'express'
 import { AppDataSoure } from './models/dataSource';
 import cors from 'cors';
 import router from './routes';
+import redisCli from '../../redis';
 
 configDotenv();
 const app: Application = express();
@@ -25,3 +26,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/', router);
+
+// redis 설정
+
+app.listen(port, async () => {
+    await redisCli.connect()
+    console.log(`App is listening on port ${port} !`)
+})
