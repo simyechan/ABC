@@ -5,6 +5,7 @@ import User from '../models/user.entity';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import redisCli from '../../../redis'
+import { access } from "fs";
 
 configDotenv();
 
@@ -41,16 +42,6 @@ const logIn = async (req:Request, res:Response) => {
   }
 }
 
-const generateAccessToken = (userId: number) => {
-  const accessToken = jwt.sign({ id: userId }, secertKey, { expiresIn: '3h' })
-  return accessToken;
-}
-
-const generateRefreshToken = (accessToken: String) => {
-  const refreshToken = jwt.sign({ accessToken }, secertKey, { expiresIn: '7d' })
-  return refreshToken;
-}
-
 const logOut = async (req:Request, res:Response) => {
   try {
     const { accessToken } = req.body;
@@ -79,6 +70,45 @@ const logOut = async (req:Request, res:Response) => {
       error: '로그아웃을 수행하는 중에 문제가 발생했습니다.'
     });
   }
-};
+}
 
-export { logIn, logOut };
+const refreshAccessToken = async(req:Request, res:Response) => {
+  try {
+    const refreshToken = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({
+        error: '리프레시 토큰이 전송되지 않았습니다.'
+      });
+    }
+
+    const userId = await redisCli.get(refreshToken);
+    if(!userId) {
+      return res.status(401).json({
+        error: '유효하지 않은 리프레시 토큰입니다.'
+      });
+    }
+
+    const accessToken = generateAccessToken(Number(userId));
+
+    return res.status(200).json({
+      accessToken: accessToken
+    });
+  } catch {
+    return res.status(500).json({
+      error: '토큰 재발급을 수행하는 중에 문제가 발생했습니다.'
+    });
+  }
+}
+
+const generateAccessToken = (userId: number) => {
+  const accessToken = jwt.sign({ id: userId }, secertKey, { expiresIn: '3h' })
+  return accessToken;
+}
+
+const generateRefreshToken = (accessToken: String) => {
+  const refreshToken = jwt.sign({ accessToken }, secertKey, { expiresIn: '7d' })
+  return refreshToken;
+}
+
+
+export { logIn, logOut, refreshAccessToken };
