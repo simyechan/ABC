@@ -13,8 +13,8 @@ const secertKey:string = process.env.SECRET || 'jwt-secret-key';
 
 const logIn = async (req:Request, res:Response) => {
   try {
-    const { userName, password } = req.body;
-    const thisUser = await IsUser.findOneBy({ userName: userName, password: password });
+    const { nick, password } = req.body;
+    const thisUser = await IsUser.findOneBy({ nick: nick, password: password });
     if (!thisUser) {
       return res.status(404).json({
         'error' : '사용자를 찾을 수 없습니다.'

@@ -6,7 +6,7 @@ export default class User {
   userId!: number;
 
   @Column({type: 'varchar', length: 50, unique: true})
-  userName!: string;
+  nick!: string;
 
   @Column({type: 'varchar', length: 25})
   password!: string;
