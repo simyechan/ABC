@@ -51,4 +51,34 @@ const generateRefreshToken = (accessToken: String) => {
   return refreshToken;
 }
 
-export { logIn };
+const logOut = async (req:Request, res:Response) => {
+  try {
+    const { accessToken } = req.body;
+    if (!accessToken) {
+      return res.status(400).json({
+        error: '토큰이 전송되지 않았습니다.'
+        
+      });
+    }
+      const decodedToken: any = jwt.decode(accessToken);
+      if (!decodedToken || !decodedToken.id) {
+        return res.status(400).json({
+          error: '유효하지 않은 토큰입니다.'
+        })
+      }
+
+    const Id = decodedToken.id;
+
+    redisCli.del(String(Id));
+
+    return res.status(200).json({
+      message: '로그아웃이 성공적으로 수행되었습니다.'
+    });
+  } catch (err) {
+    return res.status(500).json({
+      error: '로그아웃을 수행하는 중에 문제가 발생했습니다.'
+    });
+  }
+};
+
+export { logIn, logOut };
