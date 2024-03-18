@@ -5,7 +5,6 @@ import User from '../models/user.entity';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import redisCli from '../../../redis'
-import { access } from "fs";
 
 configDotenv();
 

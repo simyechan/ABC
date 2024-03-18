@@ -1,5 +1,5 @@
 import { configDotenv } from 'dotenv'
-import express, { Application, Request, Response } from 'express'
+import express, { Application } from 'express'
 import { AppDataSoure } from './models/dataSource';
 import cors from 'cors';
 import router from './routes';
