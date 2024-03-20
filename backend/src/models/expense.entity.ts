@@ -7,9 +7,8 @@ export default class Expense {
   @PrimaryGeneratedColumn({type:'bigint'})
   expenseId!: number
 
-  @ManyToOne(() => Category, category => category.categoryId)
-  @Column({type: 'bigint'})
-  categoryId!: number
+  @ManyToOne(() => Category, category => category.expenses)
+  category!: Category
 
   @ManyToOne(() => User, user => user.userId)
   @Column({type: 'bigint'})

@@ -7,12 +7,11 @@ export default class Income {
   @PrimaryGeneratedColumn({type:'bigint'})
   incomeId!: number
 
-  @ManyToOne(() => Category, category => category.categoryId)
-  @Column({type: 'bigint'})
-  categoryId!: number
+  @ManyToOne(() => Category, category => category.incomes)
+  category!: Category
 
   @ManyToOne(() => User, user => user.userId)
-  @Column({type: 'bigint'})
+  @Column({type: 'bigint', default: 1})
   userId!: number
 
   @Column({type: 'int', default: 0})
@@ -24,6 +23,6 @@ export default class Income {
   @Column({type: 'date'})
   date?: Date
 
-  @Column({type: 'int'})
+  @Column({type: 'int', default: 0})
   goal?: number
 }
