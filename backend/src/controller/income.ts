@@ -22,6 +22,7 @@ const deposit = async (req:Request, res:Response) => {
   newDeposit.explanation = explanation;
   newDeposit.date = date;
   newDeposit.category = newcategory;
+  newDeposit.total += amount;
 
   const income = await incomeRepository.save(newDeposit);
   return res.status(200).json(income);

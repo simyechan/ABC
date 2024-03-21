@@ -25,4 +25,7 @@ export default class Expense {
 
   @Column({type: 'int'})
   target?: number
+
+  @Column({type: 'int', default: 0})
+  total?: number
 }
