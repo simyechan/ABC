@@ -28,7 +28,7 @@ const deposit = async (req:Request, res:Response) => {
   return res.status(200).json(income);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "An error occurred while processing the request." });
+    return res.status(500).json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
   }
 }
 
