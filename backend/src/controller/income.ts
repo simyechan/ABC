@@ -17,12 +17,19 @@ const deposit = async (req:Request, res:Response) => {
     newcategory = await categoryRepository.save(newcategory);
   }
 
+  const lastEntry = await incomeRepository.findOne({ where: {}, order: { date: "DESC" } });
+
+  let currentTotal: number = 0;
+  if (lastEntry && typeof lastEntry.total === 'number') {
+    currentTotal = lastEntry.total;
+  }
+
   const newDeposit = new Income();
   newDeposit.amount = amount;
   newDeposit.explanation = explanation;
   newDeposit.date = date;
   newDeposit.category = newcategory;
-  newDeposit.total += amount;
+  newDeposit.total = currentTotal + amount;
 
   const income = await incomeRepository.save(newDeposit);
   return res.status(200).json(income);

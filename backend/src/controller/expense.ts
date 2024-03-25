@@ -10,6 +10,16 @@ const withdraw = async (req:Request, res:Response) => {
   try {
     const { amount, explanation, date, category } = req.body;
 
+    const parsedAmount = parseFloat(amount);
+
+    if (isNaN(parsedAmount)) {
+      return res.status(400).json({ error: "액수는 유효한 숫자여야 합니다." });
+    }
+
+    if (parsedAmount >= 0) {
+      return res.status(400).json({ error: "음수 값을 적어야 합니다." });
+    }
+
     let newcategory = await categoryRepository.findOne({ where : { name: category }})
     if (!newcategory) {
       newcategory = new Category();
@@ -17,14 +27,21 @@ const withdraw = async (req:Request, res:Response) => {
       newcategory = await categoryRepository.save(newcategory);
     }
 
+    const lastEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+
+    let currentTotal: number = 0;
+    if (lastEntry && typeof lastEntry.total === 'number') {
+      currentTotal = lastEntry.total;
+    }
     const newWithdraw = new Expense();
-    newWithdraw.amount = amount;
+    newWithdraw.amount = parsedAmount;
     newWithdraw.explanation = explanation;
     newWithdraw.date = date;
-    newWithdraw.category = category;
-    newWithdraw.total += amount;
+    newWithdraw.category = newcategory;
+    newWithdraw.total = currentTotal + parsedAmount;
 
     const expense = await expenseRepository.save(newWithdraw);
+    return res.status(200).json(expense);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
