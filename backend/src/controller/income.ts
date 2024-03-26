@@ -39,4 +39,21 @@ const deposit = async (req:Request, res:Response) => {
   }
 }
 
-export { deposit };
+const goal = async (req:Request, res:Response) => {
+  const { goal } = req.body;
+  if (!goal) {
+    return res.status(400).json({ message: "목표금액을 입력해주세요." });
+  }
+  try {
+    const newGoal = new Income();
+    newGoal.goal = goal;
+
+    const g = await incomeRepository.save(newGoal);
+    return res.status(200).json(g);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." })
+  }
+}
+
+export { deposit, goal };
