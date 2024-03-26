@@ -48,4 +48,24 @@ const withdraw = async (req:Request, res:Response) => {
   }
 }
 
-export { withdraw };
+const target = async (req:Request, res:Response) => {
+  const { target } = req.body;
+  if (!target) {
+    return res.status(400).json({ message: "목표금액을 입력해주세요." });
+  }
+  if (target >= 0) {
+    return res.status(400).json({ message: "음수 값을 적어주세요" });
+  }
+  try {
+    const newTarget = new Expense();
+    newTarget.target = target;
+
+    const t = await expenseRepository.save(newTarget);
+    return res.status(200).json(t);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." })
+  }
+}
+
+export { withdraw, target };
