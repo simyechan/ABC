@@ -56,4 +56,14 @@ const goal = async (req:Request, res:Response) => {
   }
 }
 
-export { deposit, goal };
+const view_goal = async (req:Request, res:Response) => {
+  try {
+    const g = await incomeRepository.find({ select : ["goal"] })
+    res.json(g);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "목표금액을 불러오는 동안 문제가 생겼습니다." })
+  }
+}
+
+export { deposit, goal, view_goal };
