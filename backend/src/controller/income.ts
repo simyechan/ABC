@@ -62,7 +62,7 @@ const view_goal = async (req:Request, res:Response) => {
     res.json(g);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "목표금액을 불러오는 동안 문제가 생겼습니다." })
+    return res.status(500).json({ error: "입금 목표금액을 불러오는 동안 문제가 생겼습니다." })
   }
 }
 

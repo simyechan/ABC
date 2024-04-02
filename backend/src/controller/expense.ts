@@ -68,4 +68,14 @@ const target = async (req:Request, res:Response) => {
   }
 }
 
-export { withdraw, target };
+const view_target = async (req:Request, res:Response) => {
+  try {
+    const t = await expenseRepository.find({ select : ["target"] })
+    res.json(t);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "출금 목표금액을 불러오는 동안 문제가 생겼습니다." })
+  }
+}
+
+export { withdraw, target, view_target };
