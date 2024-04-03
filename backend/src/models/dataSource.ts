@@ -5,6 +5,8 @@ import Income from "./income.entity";
 import Expense from "./expense.entity";
 import Category from "./category.entity";
 import 'reflect-metadata'
+import Goal from "./goal.entity";
+import Target from "./target.entity";
 
 configDotenv();
 
@@ -18,6 +20,6 @@ export const AppDataSoure = new DataSource({
     synchronize: true,
     logging: false,
     migrations: [],
-    entities: [User, Income, Expense, Category],
+    entities: [User, Income, Expense, Category, Goal, Target],
     subscribers: [],
 });

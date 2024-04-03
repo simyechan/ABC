@@ -9,7 +9,7 @@ configDotenv();
 const app: Application = express();
 const port: number = Number(process.env.PORT) || 8000;
 
-// // db설정
+// db설정
 AppDataSoure.initialize()
     .then(() => { console.log(`DB has initted`) })
     .catch((err) => { console.error(err) });

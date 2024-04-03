@@ -2,9 +2,11 @@ import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
 import Category from "../models/category.entity";
+import Target from "../models/target.entity";
 
 const expenseRepository = AppDataSoure.getRepository(Expense);
 const categoryRepository = AppDataSoure.getRepository(Category);
+const targetRepository = AppDataSoure.getRepository(Target);
 
 const withdraw = async (req:Request, res:Response) => {
   try {
@@ -57,10 +59,17 @@ const target = async (req:Request, res:Response) => {
     return res.status(400).json({ message: "음수 값을 적어주세요" });
   }
   try {
-    const newTarget = new Expense();
-    newTarget.target = target;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
 
-    const t = await expenseRepository.save(newTarget);
+    const newTarget = new Target();
+    newTarget.targetAmount = target;
+    newTarget.year = currentYear;
+    newTarget.month = currentMonth;
+
+
+    const t = await targetRepository.save(newTarget);
     return res.status(200).json(t);
   } catch (error) {
     console.error(error);
@@ -70,7 +79,11 @@ const target = async (req:Request, res:Response) => {
 
 const view_target = async (req:Request, res:Response) => {
   try {
-    const t = await expenseRepository.find({ select : ["target"] })
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    const t = await targetRepository.findBy({ year : currentYear, month : currentMonth });
     res.json(t);
   } catch (error) {
     console.error(error);

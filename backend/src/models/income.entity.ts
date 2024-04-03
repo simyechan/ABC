@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne  } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn  } from "typeorm";
 import Category from "./category.entity";
 import User from "./user.entity";
 
@@ -17,14 +17,11 @@ export default class Income {
   @Column({type: 'int', default: 0})
   amount!: number
 
-  @Column({type: 'varchar'})
+  @Column({type: 'varchar', nullable: true})
   explanation?: string
 
   @Column({type: 'date'})
   date?: Date
-
-  @Column({type: 'int', default: 0})
-  goal?: number
   
   @Column({type: 'int', default: 0})
   total?: number

@@ -2,9 +2,11 @@ import { Response, Request } from "express"
 import { AppDataSoure } from "../models/dataSource";
 import Income from "../models/income.entity";
 import Category from "../models/category.entity";
+import Goal from "../models/goal.entity";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const categoryRepository = AppDataSoure.getRepository(Category);
+const goalRepository = AppDataSoure.getRepository(Goal);
 
 const deposit = async (req:Request, res:Response) => {
   try {
@@ -45,10 +47,16 @@ const goal = async (req:Request, res:Response) => {
     return res.status(400).json({ message: "목표금액을 입력해주세요." });
   }
   try {
-    const newGoal = new Income();
-    newGoal.goal = goal;
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
 
-    const g = await incomeRepository.save(newGoal);
+    const newGoal = new Goal();
+    newGoal.goalAmount = goal;
+    newGoal.year = currentYear
+    newGoal.month = currentMonth
+
+    const g = await goalRepository.save(newGoal);
     return res.status(200).json(g);
   } catch (error) {
     console.error(error);
@@ -58,7 +66,11 @@ const goal = async (req:Request, res:Response) => {
 
 const view_goal = async (req:Request, res:Response) => {
   try {
-    const g = await incomeRepository.find({ select : ["goal"] })
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+
+    const g = await goalRepository.findBy({ year : currentYear, month : currentMonth });
     res.json(g);
   } catch (error) {
     console.error(error);
