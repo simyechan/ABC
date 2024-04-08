@@ -3,9 +3,11 @@ import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
 import Income from "../models/income.entity";
 import { Between } from "typeorm";
+import Category from "../models/category.entity";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const expenseRepository = AppDataSoure.getRepository(Expense);
+const categoryRepository = AppDataSoure.getRepository(Category);
 
 const getTotalForDate = async (req: Request, res: Response) => {
   try {
@@ -68,4 +70,15 @@ const getTotalForMonth = async (req:Request, res:Response) => {
   }
 }
 
-export { getTotalForDate, getTotalForMonth };
+const getCategory = async (req: Request, res: Response) => {
+  try {
+    const categories = await categoryRepository.find()
+
+    return res.status(200).json(categories)
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "카테고리를 불어오는 동안 문제가 생겼습니다." })
+  }
+}
+
+export { getTotalForDate, getTotalForMonth, getCategory };
