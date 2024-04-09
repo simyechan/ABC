@@ -18,8 +18,9 @@ const getTotalForDate = async (req: Request, res: Response) => {
     }
 
     const startDate = new Date(String(date));
+    startDate.setDate(startDate.getDate() - 1);
     const endDate = new Date(String(date));
-    endDate.setDate(endDate.getDate() + 1);
+    endDate.setDate(endDate.getDate());
 
     const incometotal = (await incomeRepository.find({
       where: {
