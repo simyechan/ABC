@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne  } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, ManyToMany  } from "typeorm";
 import Category from "./category.entity";
 import User from "./user.entity";
 
@@ -7,7 +7,7 @@ export default class Expense {
   @PrimaryGeneratedColumn({type:'bigint'})
   expenseId!: number
 
-  @ManyToOne(() => Category, category => category.expenses)
+  @ManyToMany(() => Category, category => category.expenses)
   category!: Category
 
   @ManyToOne(() => User, user => user.userId)

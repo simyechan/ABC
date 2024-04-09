@@ -26,27 +26,47 @@ const withdraw = async (req:Request, res:Response) => {
     if (!newcategory) {
       newcategory = new Category();
       newcategory.name = category;
-      newcategory = await categoryRepository.save(newcategory);
+      try {
+        newcategory = await categoryRepository.save(newcategory);
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: '카테고리를 저장하는 동안 문제가 발생했습니다.' });
+      }
     }
 
-    const lastEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+    const newDeposit = new Expense();
+    newDeposit.amount = parsedAmount;
+    newDeposit.explanation = explanation;
+    newDeposit.date = date;
+    newDeposit.category = newcategory;
 
-    let currentTotal: number = 0;
-    if (lastEntry && typeof lastEntry.total === 'number') {
-      currentTotal = lastEntry.total;
-    }
-    const newWithdraw = new Expense();
-    newWithdraw.amount = parsedAmount;
-    newWithdraw.explanation = explanation;
-    newWithdraw.date = date;
-    newWithdraw.category = newcategory;
-    newWithdraw.total = currentTotal + parsedAmount;
+    const income = await expenseRepository.save(newDeposit);
 
-    const expense = await expenseRepository.save(newWithdraw);
-    return res.status(200).json(expense);
+    const totalIncome = await calculateTotalIncome(parsedAmount);
+
+    await updateTotalIncome(totalIncome);
+
+    return res.status(200).json(income);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
+  }
+}
+
+async function calculateTotalIncome(parsedAmount) {
+  const lastEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+  let currentTotal: number = 0;
+  if (lastEntry && typeof lastEntry.total === 'number') {
+    currentTotal = lastEntry.total;
+  }
+  return currentTotal + parsedAmount;
+}
+
+async function updateTotalIncome(totalIncome: number) {
+  const latestIncomeEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+  if (latestIncomeEntry) {
+    latestIncomeEntry.total = totalIncome;
+    await expenseRepository.save(latestIncomeEntry);
   }
 }
 
@@ -83,8 +103,16 @@ const view_target = async (req:Request, res:Response) => {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
 
-    const t = await targetRepository.findBy({ year : currentYear, month : currentMonth });
-    res.json(t);
+    const t = await targetRepository.findOne({ 
+      where: {
+        year : currentYear, 
+        month : currentMonth
+      },
+      order: {
+        targetId: "DESC"
+      }
+     });
+     return res.status(200).json(t);
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "출금 목표금액을 불러오는 동안 문제가 생겼습니다." })

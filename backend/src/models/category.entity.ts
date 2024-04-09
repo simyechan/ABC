@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import Income from "./income.entity";
 import Expense from "./expense.entity";
 
@@ -10,9 +10,11 @@ export default class Category {
   @Column({type: 'varchar'})
   name!: string
 
-  @OneToMany(() => Income, income => income.category)
+  @ManyToMany(() => Income, income => income.category)
+  @JoinTable()
   incomes!: Income[];
 
-  @OneToMany(() => Expense, expense => expense.category)
+  @ManyToMany(() => Expense, expense => expense.category)
+  @JoinTable()
   expenses!: Expense[];
 }
