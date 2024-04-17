@@ -26,4 +26,3 @@ export default class Income {
   @Column({type: 'int', default: 0})
   total?: number
 }
-// sdfgh
