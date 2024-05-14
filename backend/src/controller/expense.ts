@@ -1,11 +1,9 @@
 import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
-import Category from "../models/category.entity";
 import Target from "../models/target.entity";
 
 const expenseRepository = AppDataSoure.getRepository(Expense);
-const categoryRepository = AppDataSoure.getRepository(Category);
 const targetRepository = AppDataSoure.getRepository(Target);
 
 const withdraw = async (req:Request, res:Response) => {
@@ -22,23 +20,11 @@ const withdraw = async (req:Request, res:Response) => {
       return res.status(400).json({ error: "음수 값을 적어야 합니다." });
     }
 
-    let newcategory = await categoryRepository.findOne({ where : { name: category }})
-    if (!newcategory) {
-      newcategory = new Category();
-      newcategory.name = category;
-      try {
-        newcategory = await categoryRepository.save(newcategory);
-      } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: '카테고리를 저장하는 동안 문제가 발생했습니다.' });
-      }
-    }
-
     const newDeposit = new Expense();
     newDeposit.amount = parsedAmount;
     newDeposit.explanation = explanation;
     newDeposit.date = date;
-    newDeposit.category = newcategory;
+    newDeposit.category = category;
 
     const income = await expenseRepository.save(newDeposit);
 
