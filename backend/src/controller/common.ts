@@ -15,27 +15,27 @@ const getTotalForDate = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "날짜를 찾을 수 없습니다." });
     }
 
-    const startDate = new Date(String(date));
-    startDate.setDate(startDate.getDate() - 1);
-    const endDate = new Date(String(date));
-    endDate.setDate(endDate.getDate());
+    const startDate = new Date(date as string);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(date as string);
+    endDate.setHours(23, 59, 59, 999);
 
-    const incometotal = (await incomeRepository.find({
+    const incomes = await incomeRepository.find({
       where: {
         date: Between(startDate, endDate)
       }
-    })).reduce((total, income) => total + income.amount, 0);
-      
-    const expensetotal = (await expenseRepository.find({
+    });
+
+    const expenses = await expenseRepository.find({
       where: {
         date: Between(startDate, endDate)
       }
-    })).reduce((total, expense) => total + expense.amount, 0);
+    });
 
-    return res.status(200).json({ total: incometotal + expensetotal || 0 });
+    return res.status(200).json({ incomes, expenses });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "하루 총 금액을 불러오는 동안 문제가 생겼습니다." });
+    return res.status(500).json({ error: "특정 날짜의 수입과 지출을 불러오는 동안 문제가 생겼습니다." });
   }
 };
 
