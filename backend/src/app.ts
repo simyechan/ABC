@@ -7,7 +7,7 @@ import redisCli from '../../redis';
 
 configDotenv();
 const app: Application = express();
-const port: number = Number(process.env.PORT) || 8000;
+const port: number = 8000;
 
 // db설정
 AppDataSoure.initialize()

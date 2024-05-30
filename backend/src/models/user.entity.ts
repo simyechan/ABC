@@ -8,6 +8,6 @@ export default class User {
   @Column({type: 'varchar', length: 50, unique: true})
   nick!: string;
 
-  @Column({type: 'varchar', length: 25})
+  @Column({type: 'varchar', length: 255})
   password!: string;
 }
