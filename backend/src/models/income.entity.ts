@@ -47,4 +47,14 @@ export default class Income {
 
   @Column({type: 'enum', enum: Category, default: Category.etc})
   category!: Category;
+
+  static getAllCategories(): string[] {
+    const categories: string[] = [];
+    for (const key in Category) {
+      if (isNaN(Number(key))) {
+        categories.push(Category[key]);
+      }
+    }
+    return categories;
+  }
 }

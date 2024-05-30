@@ -71,9 +71,8 @@ const getTotalForMonth = async (req:Request, res:Response) => {
 
 const getCategory = async (req: Request, res: Response) => {
   try {
-    const income = await incomeRepository.find();
 
-    const categories = income.map(income => income.category);
+    const categories = Income.getAllCategories();
     
     return res.status(200).json(categories);
   } catch (error) {
