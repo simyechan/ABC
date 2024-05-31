@@ -2,6 +2,7 @@ import { Response, Request } from "express"
 import { AppDataSoure } from "../models/dataSource";
 import Income from "../models/income.entity";
 import Goal from "../models/goal.entity";
+import { FindManyOptions } from "typeorm";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const goalRepository = AppDataSoure.getRepository(Goal);
@@ -9,11 +10,12 @@ const goalRepository = AppDataSoure.getRepository(Goal);
 const deposit = async (req:Request, res:Response) => {
   try {
     const { amount, explanation, date, category } = req.body;
+    const day = new Date(date)
 
     const newDeposit = new Income();
     newDeposit.amount = amount;
     newDeposit.explanation = explanation;
-    newDeposit.date = date;
+    newDeposit.date = day;
     newDeposit.category = category;
 
     const income = await incomeRepository.save(newDeposit);
@@ -43,6 +45,24 @@ async function updateTotalIncome(totalIncome: number) {
   if (latestIncomeEntry) {
     latestIncomeEntry.total = totalIncome;
     await incomeRepository.save(latestIncomeEntry);
+  }
+}
+
+const view_deposit = async (req:Request, res:Response) => {
+  try {
+    const { date } = req.params;
+
+    const day = new Date(date).toISOString();
+
+    const queryOptions: FindManyOptions = {
+      where: { date: day }
+    };
+
+    const dailyIncome = await incomeRepository.find(queryOptions);
+    return res.status(200).json(dailyIncome);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
   }
 }
 
@@ -91,4 +111,4 @@ const view_goal = async (req:Request, res:Response) => {
   }
 }
 
-export { deposit, goal, view_goal };
+export { deposit, goal, view_goal, view_deposit };
