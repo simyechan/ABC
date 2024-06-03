@@ -2,6 +2,7 @@ import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
 import Target from "../models/target.entity";
+import { FindManyOptions } from "typeorm";
 
 const expenseRepository = AppDataSoure.getRepository(Expense);
 const targetRepository = AppDataSoure.getRepository(Target);
@@ -56,6 +57,24 @@ async function updateTotalIncome(totalIncome: number) {
   }
 }
 
+const view_withdraw = async (req:Request, res:Response) => {
+  try {
+    const { date } = req.params;
+
+    const day = new Date(date).toISOString();
+
+    const queryOptions: FindManyOptions = {
+      where: { date: day }
+    };
+
+    const dailyIncome = await expenseRepository.find(queryOptions);
+    return res.status(200).json(dailyIncome);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
+  }
+}
+
 const target = async (req:Request, res:Response) => {
   const { target } = req.body;
   if (!target) {
@@ -105,4 +124,4 @@ const view_target = async (req:Request, res:Response) => {
   }
 }
 
-export { withdraw, target, view_target };
+export { withdraw, target, view_target, view_withdraw };
