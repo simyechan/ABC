@@ -4,7 +4,7 @@ import { getCategory, getTotalForDate, getTotalForMonth } from "../controller/co
 const router: Router = express.Router();
 
 router.get('/day', getTotalForDate);
-router.get('/month', getTotalForMonth);
+router.get("/month/:date", getTotalForMonth);
 router.get('/categorys', getCategory);
 
 export default router;
