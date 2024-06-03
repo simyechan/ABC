@@ -7,7 +7,7 @@ import { FindManyOptions } from "typeorm";
 const expenseRepository = AppDataSoure.getRepository(Expense);
 const targetRepository = AppDataSoure.getRepository(Target);
 
-const withdraw = async (req:Request, res:Response) => {
+const withdraw = async (req: Request, res: Response) => {
   try {
     const { amount, explanation, date, category } = req.body;
 
@@ -36,46 +36,56 @@ const withdraw = async (req:Request, res:Response) => {
     return res.status(200).json(income);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
+    return res
+      .status(500)
+      .json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
   }
-}
+};
 
 async function calculateTotalIncome(parsedAmount) {
-  const lastEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+  const lastEntry = await expenseRepository.findOne({
+    where: {},
+    order: { date: "DESC" },
+  });
   let currentTotal: number = 0;
-  if (lastEntry && typeof lastEntry.total === 'number') {
+  if (lastEntry && typeof lastEntry.total === "number") {
     currentTotal = lastEntry.total;
   }
   return currentTotal + parsedAmount;
 }
 
 async function updateTotalIncome(totalIncome: number) {
-  const latestIncomeEntry = await expenseRepository.findOne({ where: {}, order: { date: "DESC" } });
+  const latestIncomeEntry = await expenseRepository.findOne({
+    where: {},
+    order: { date: "DESC" },
+  });
   if (latestIncomeEntry) {
     latestIncomeEntry.total = totalIncome;
     await expenseRepository.save(latestIncomeEntry);
   }
 }
 
-const view_withdraw = async (req:Request, res:Response) => {
+const view_withdraw = async (req: Request, res: Response) => {
   try {
     const { date } = req.params;
 
     const day = new Date(date).toISOString();
 
     const queryOptions: FindManyOptions = {
-      where: { date: day }
+      where: { date: day },
     };
 
     const dailyIncome = await expenseRepository.find(queryOptions);
     return res.status(200).json(dailyIncome);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
+    return res
+      .status(500)
+      .json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
   }
-}
+};
 
-const target = async (req:Request, res:Response) => {
+const target = async (req: Request, res: Response) => {
   const { target } = req.body;
   if (!target) {
     return res.status(400).json({ message: "목표금액을 입력해주세요." });
@@ -93,35 +103,38 @@ const target = async (req:Request, res:Response) => {
     newTarget.year = currentYear;
     newTarget.month = currentMonth;
 
-
     const t = await targetRepository.save(newTarget);
     return res.status(200).json(t);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." })
+    return res
+      .status(500)
+      .json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." });
   }
-}
+};
 
-const view_target = async (req:Request, res:Response) => {
+const view_target = async (req: Request, res: Response) => {
   try {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
 
-    const t = await targetRepository.findOne({ 
+    const t = await targetRepository.findOne({
       where: {
-        year : currentYear, 
-        month : currentMonth
+        year: currentYear,
+        month: currentMonth,
       },
       order: {
-        targetId: "DESC"
-      }
-     });
-     return res.status(200).json(t);
+        targetId: "DESC",
+      },
+    });
+    return res.status(200).json(t);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "출금 목표금액을 불러오는 동안 문제가 생겼습니다." })
+    return res
+      .status(500)
+      .json({ error: "출금 목표금액을 불러오는 동안 문제가 생겼습니다." });
   }
-}
+};
 
 export { withdraw, target, view_target, view_withdraw };

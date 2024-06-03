@@ -35,11 +35,9 @@ const getTotalForDate = async (req: Request, res: Response) => {
     return res.status(200).json({ incomes, expenses });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({
-        error: "특정 날짜의 수입과 지출을 불러오는 동안 문제가 생겼습니다.",
-      });
+    return res.status(500).json({
+      error: "특정 날짜의 수입과 지출을 불러오는 동안 문제가 생겼습니다.",
+    });
   }
 };
 

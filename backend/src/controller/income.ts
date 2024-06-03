@@ -1,4 +1,4 @@
-import { Response, Request } from "express"
+import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Income from "../models/income.entity";
 import Goal from "../models/goal.entity";
@@ -7,10 +7,10 @@ import { FindManyOptions } from "typeorm";
 const incomeRepository = AppDataSoure.getRepository(Income);
 const goalRepository = AppDataSoure.getRepository(Goal);
 
-const deposit = async (req:Request, res:Response) => {
+const deposit = async (req: Request, res: Response) => {
   try {
     const { amount, explanation, date, category } = req.body;
-    const day = new Date(date)
+    const day = new Date(date);
 
     const newDeposit = new Income();
     newDeposit.amount = amount;
@@ -27,46 +27,56 @@ const deposit = async (req:Request, res:Response) => {
     return res.status(200).json(income);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
+    return res
+      .status(500)
+      .json({ error: "가계부를 입력하는 동안 문제가 생겼습니다." });
   }
-}
+};
 
 async function calculateTotalIncome(amount) {
-  const lastEntry = await incomeRepository.findOne({ where: {}, order: { date: "DESC" } });
+  const lastEntry = await incomeRepository.findOne({
+    where: {},
+    order: { date: "DESC" },
+  });
   let currentTotal: number = 0;
-  if (lastEntry && typeof lastEntry.total === 'number') {
+  if (lastEntry && typeof lastEntry.total === "number") {
     currentTotal = lastEntry.total;
   }
   return currentTotal + amount;
 }
 
 async function updateTotalIncome(totalIncome: number) {
-  const latestIncomeEntry = await incomeRepository.findOne({ where: {}, order: { date: "DESC" } });
+  const latestIncomeEntry = await incomeRepository.findOne({
+    where: {},
+    order: { date: "DESC" },
+  });
   if (latestIncomeEntry) {
     latestIncomeEntry.total = totalIncome;
     await incomeRepository.save(latestIncomeEntry);
   }
 }
 
-const view_deposit = async (req:Request, res:Response) => {
+const view_deposit = async (req: Request, res: Response) => {
   try {
     const { date } = req.params;
 
     const day = new Date(date).toISOString();
 
     const queryOptions: FindManyOptions = {
-      where: { date: day }
+      where: { date: day },
     };
 
     const dailyIncome = await incomeRepository.find(queryOptions);
     return res.status(200).json(dailyIncome);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
+    return res
+      .status(500)
+      .json({ error: "내역을 가져오는 동안 문제가 생겼습니다." });
   }
-}
+};
 
-const goal = async (req:Request, res:Response) => {
+const goal = async (req: Request, res: Response) => {
   const { goal } = req.body;
   if (!goal) {
     return res.status(400).json({ message: "목표금액을 입력해주세요." });
@@ -78,37 +88,41 @@ const goal = async (req:Request, res:Response) => {
 
     const newGoal = new Goal();
     newGoal.goalAmount = goal;
-    newGoal.year = currentYear
-    newGoal.month = currentMonth
+    newGoal.year = currentYear;
+    newGoal.month = currentMonth;
 
     const g = await goalRepository.save(newGoal);
     return res.status(200).json(g);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." })
+    return res
+      .status(500)
+      .json({ error: "목표금액을 입력하는 동안 문제가 생겼습니다." });
   }
-}
+};
 
-const view_goal = async (req:Request, res:Response) => {
+const view_goal = async (req: Request, res: Response) => {
   try {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
 
-    const g = await goalRepository.findOne({ 
-      where: { 
-        year : currentYear, 
-        month : currentMonth 
-      }, 
-      order: { 
-        goalId: "DESC" 
-      }
+    const g = await goalRepository.findOne({
+      where: {
+        year: currentYear,
+        month: currentMonth,
+      },
+      order: {
+        goalId: "DESC",
+      },
     });
     return res.status(200).json(g);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "입금 목표금액을 불러오는 동안 문제가 생겼습니다." })
+    return res
+      .status(500)
+      .json({ error: "입금 목표금액을 불러오는 동안 문제가 생겼습니다." });
   }
-}
+};
 
 export { deposit, goal, view_goal, view_deposit };

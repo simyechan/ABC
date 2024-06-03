@@ -5,22 +5,26 @@ import jwt from "jsonwebtoken";
 
 configDotenv();
 
-const validationAccess = async (req:any, res:Response, next:NextFunction) => {
+const validationAccess = async (
+  req: any,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const authorization = req.get('authorization')?.split(' ')[1];
-    if(!authorization || !isJWT(authorization)) {
+    const authorization = req.get("authorization")?.split(" ")[1];
+    if (!authorization || !isJWT(authorization)) {
       return res.status(401).json({
-        error: '유효성 검증에 실패했습니다.'
-      })
+        error: "유효성 검증에 실패했습니다.",
+      });
     }
-    const secertKey:string = process.env.SECRET || 'jwt-secret-key';
+    const secertKey: string = process.env.SECRET || "jwt-secret-key";
     req.payload = jwt.verify(authorization, secertKey);
 
     return next();
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     return err;
   }
-}
+};
 
-export { validationAccess }
+export { validationAccess };
