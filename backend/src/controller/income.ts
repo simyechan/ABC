@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Income from "../models/income.entity";
 import Goal from "../models/goal.entity";
-import { FindManyOptions } from "typeorm";
+import { Between, FindManyOptions } from "typeorm";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const goalRepository = AppDataSoure.getRepository(Goal);
@@ -77,19 +77,15 @@ const view_deposit = async (req: Request, res: Response) => {
 };
 
 const goal = async (req: Request, res: Response) => {
+  const { date } = req.params;
   const { goal } = req.body;
   if (!goal) {
     return res.status(400).json({ message: "목표금액을 입력해주세요." });
   }
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-
     const newGoal = new Goal();
     newGoal.goalAmount = goal;
-    newGoal.year = currentYear;
-    newGoal.month = currentMonth;
+    newGoal.date = new Date(date);
 
     const g = await goalRepository.save(newGoal);
     return res.status(200).json(g);
@@ -103,14 +99,19 @@ const goal = async (req: Request, res: Response) => {
 
 const view_goal = async (req: Request, res: Response) => {
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
+    const { date } = req.params;
+
+    const currentDate = new Date(date);
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
 
     const g = await goalRepository.findOne({
       where: {
-        year: currentYear,
-        month: currentMonth,
+        date: Between(startDate, endDate),
       },
       order: {
         goalId: "DESC",
