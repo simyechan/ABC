@@ -5,7 +5,7 @@ import { validationAccess } from "../controller/jwt";
 const router: Router = express.Router();
 
 router.post('/deposit', validationAccess, deposit);
-router.get('/deposit/:date', validationAccess, view_deposit)
+router.get('/deposit/:date', validationAccess, view_deposit);
 router.post('/goal', validationAccess, goal);
 router.get('/goal', validationAccess, view_goal);
 
