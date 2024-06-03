@@ -11,7 +11,7 @@ const router: Router = express.Router();
 
 router.post("/withdraw", validationAccess, withdraw);
 router.get("/withdraw/:date", validationAccess, view_withdraw);
-router.post("/target", validationAccess, target);
-router.get("/target", validationAccess, view_target);
+router.post("/target/:date", validationAccess, target);
+router.get("/target/:date", validationAccess, view_target);
 
 export default router;

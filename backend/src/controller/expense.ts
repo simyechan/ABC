@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
 import Target from "../models/target.entity";
-import { FindManyOptions } from "typeorm";
+import { Between, FindManyOptions } from "typeorm";
 
 const expenseRepository = AppDataSoure.getRepository(Expense);
 const targetRepository = AppDataSoure.getRepository(Target);
@@ -86,6 +86,7 @@ const view_withdraw = async (req: Request, res: Response) => {
 };
 
 const target = async (req: Request, res: Response) => {
+  const { date } = req.params;
   const { target } = req.body;
   if (!target) {
     return res.status(400).json({ message: "목표금액을 입력해주세요." });
@@ -94,14 +95,9 @@ const target = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "음수 값을 적어주세요" });
   }
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-
     const newTarget = new Target();
     newTarget.targetAmount = target;
-    newTarget.year = currentYear;
-    newTarget.month = currentMonth;
+    newTarget.date = new Date(date);
 
     const t = await targetRepository.save(newTarget);
     return res.status(200).json(t);
@@ -115,14 +111,19 @@ const target = async (req: Request, res: Response) => {
 
 const view_target = async (req: Request, res: Response) => {
   try {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
+    const { date } = req.params;
+
+    const currentDate = new Date(date);
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
 
     const t = await targetRepository.findOne({
       where: {
-        year: currentYear,
-        month: currentMonth,
+        date: Between(startDate, endDate),
       },
       order: {
         targetId: "DESC",
