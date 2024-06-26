@@ -7,8 +7,9 @@ import { Between, FindManyOptions } from "typeorm";
 const expenseRepository = AppDataSoure.getRepository(Expense);
 const targetRepository = AppDataSoure.getRepository(Target);
 
-const withdraw = async (req: Request, res: Response) => {
+const withdraw = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { amount, explanation, date, category } = req.body;
 
     const parsedAmount = parseFloat(amount);
@@ -22,6 +23,7 @@ const withdraw = async (req: Request, res: Response) => {
     }
 
     const newDeposit = new Expense();
+    newDeposit.userId = id;
     newDeposit.amount = parsedAmount;
     newDeposit.explanation = explanation;
     newDeposit.date = date;
@@ -65,14 +67,15 @@ async function updateTotalIncome(totalIncome: number) {
   }
 }
 
-const view_withdraw = async (req: Request, res: Response) => {
+const view_withdraw = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.params;
 
     const day = new Date(date).toISOString();
 
     const queryOptions: FindManyOptions = {
-      where: { date: day },
+      where: { userId: id, date: day },
     };
 
     const dailyIncome = await expenseRepository.find(queryOptions);
@@ -85,7 +88,8 @@ const view_withdraw = async (req: Request, res: Response) => {
   }
 };
 
-const target = async (req: Request, res: Response) => {
+const target = async (req: any, res: Response) => {
+  const { id } = req.payload;
   const { date } = req.params;
   const { target } = req.body;
   if (!target) {
@@ -96,6 +100,7 @@ const target = async (req: Request, res: Response) => {
   }
   try {
     const newTarget = new Target();
+    newTarget.userId = id;
     newTarget.targetAmount = target;
     newTarget.date = new Date(date);
 
@@ -109,8 +114,9 @@ const target = async (req: Request, res: Response) => {
   }
 };
 
-const view_target = async (req: Request, res: Response) => {
+const view_target = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.params;
 
     const currentDate = new Date(date);
@@ -123,6 +129,7 @@ const view_target = async (req: Request, res: Response) => {
 
     const t = await targetRepository.findOne({
       where: {
+        userId: id,
         date: Between(startDate, endDate),
       },
       order: {

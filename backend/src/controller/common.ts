@@ -3,9 +3,11 @@ import { AppDataSoure } from "../models/dataSource";
 import Expense from "../models/expense.entity";
 import Income from "../models/income.entity";
 import { Between } from "typeorm";
+import User from "../models/user.entity";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const expenseRepository = AppDataSoure.getRepository(Expense);
+const userRepository = AppDataSoure.getRepository(User);
 
 const getTotalForDate = async (req: Request, res: Response) => {
   try {
@@ -41,8 +43,9 @@ const getTotalForDate = async (req: Request, res: Response) => {
   }
 };
 
-const getTotalForMonth = async (req: Request, res: Response) => {
+const getTotalForMonth = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.params;
 
     if (!date) {
@@ -59,6 +62,7 @@ const getTotalForMonth = async (req: Request, res: Response) => {
     const incometotal = (
       await incomeRepository.find({
         where: {
+          userId: id,
           date: Between(startMonth, endMonth),
         },
       })
@@ -67,6 +71,7 @@ const getTotalForMonth = async (req: Request, res: Response) => {
     const expensetotal = (
       await expenseRepository.find({
         where: {
+          userId: id,
           date: Between(startMonth, endMonth),
         },
       })

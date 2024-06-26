@@ -8,6 +8,8 @@ import {
 import User from "./user.entity";
 
 enum Category {
+  fixedExpenses = "고정 지출",
+  fixedIncome = "고정 수입",
   food = "음식",
   housing = "주거비(집세)",
   cloth = "의류/신발",
@@ -36,7 +38,7 @@ export default class Expense {
   expenseId!: number;
 
   @ManyToOne(() => User, (user) => user.userId)
-  @Column({ type: "bigint", default: 1 })
+  @Column({ type: "bigint" })
   userId!: number;
 
   @Column({ type: "int", default: 0 })

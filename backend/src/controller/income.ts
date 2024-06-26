@@ -7,12 +7,14 @@ import { Between, FindManyOptions } from "typeorm";
 const incomeRepository = AppDataSoure.getRepository(Income);
 const goalRepository = AppDataSoure.getRepository(Goal);
 
-const deposit = async (req: Request, res: Response) => {
+const deposit = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { amount, explanation, date, category } = req.body;
     const day = new Date(date);
 
     const newDeposit = new Income();
+    newDeposit.userId = id;
     newDeposit.amount = amount;
     newDeposit.explanation = explanation;
     newDeposit.date = day;
@@ -56,14 +58,15 @@ async function updateTotalIncome(totalIncome: number) {
   }
 }
 
-const view_deposit = async (req: Request, res: Response) => {
+const view_deposit = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.params;
 
     const day = new Date(date).toISOString();
 
     const queryOptions: FindManyOptions = {
-      where: { date: day },
+      where: { userId: id, date: day },
     };
 
     const dailyIncome = await incomeRepository.find(queryOptions);
@@ -76,7 +79,8 @@ const view_deposit = async (req: Request, res: Response) => {
   }
 };
 
-const goal = async (req: Request, res: Response) => {
+const goal = async (req: any, res: Response) => {
+  const { id } = req.payload;
   const { date } = req.params;
   const { goal } = req.body;
   if (!goal) {
@@ -84,6 +88,7 @@ const goal = async (req: Request, res: Response) => {
   }
   try {
     const newGoal = new Goal();
+    newGoal.userId = id;
     newGoal.goalAmount = goal;
     newGoal.date = new Date(date);
 
@@ -97,8 +102,9 @@ const goal = async (req: Request, res: Response) => {
   }
 };
 
-const view_goal = async (req: Request, res: Response) => {
+const view_goal = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.params;
 
     const currentDate = new Date(date);
@@ -111,6 +117,7 @@ const view_goal = async (req: Request, res: Response) => {
 
     const g = await goalRepository.findOne({
       where: {
+        userId: id,
         date: Between(startDate, endDate),
       },
       order: {

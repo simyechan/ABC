@@ -27,4 +27,27 @@ const signUp = async (req: Request, res: Response) => {
   });
 };
 
-export { signUp };
+const getNick = async (req: any, res: Response) => {
+  try {
+    const { id } = req.payload;
+
+    const thisUser = await IsUser.findOneBy({ userId: id });
+
+    if (!thisUser) {
+      res.status(404).json({
+        error: "정보를 찾을 수 없습니다.",
+      });
+    }
+
+    return res.status(200).json({
+      nick: thisUser?.nick,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ err: "닉네임을 불러오는 동안 문제가 생겼습니다." });
+  }
+};
+
+export { signUp, getNick };
