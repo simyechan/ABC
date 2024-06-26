@@ -7,10 +7,10 @@ import User from "../models/user.entity";
 
 const incomeRepository = AppDataSoure.getRepository(Income);
 const expenseRepository = AppDataSoure.getRepository(Expense);
-const userRepository = AppDataSoure.getRepository(User);
 
-const getTotalForDate = async (req: Request, res: Response) => {
+const getTotalForDate = async (req: any, res: Response) => {
   try {
+    const { id } = req.payload;
     const { date } = req.query;
 
     if (!date) {
@@ -24,12 +24,14 @@ const getTotalForDate = async (req: Request, res: Response) => {
 
     const incomes = await incomeRepository.find({
       where: {
+        userId: id,
         date: Between(startDate, endDate),
       },
     });
 
     const expenses = await expenseRepository.find({
       where: {
+        userId: id,
         date: Between(startDate, endDate),
       },
     });

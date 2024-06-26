@@ -9,8 +9,8 @@ import { getNick } from "../controller/user";
 
 const router: Router = express.Router();
 
-router.get("/day", getTotalForDate);
-router.get("/month/:date", getTotalForMonth);
+router.get("/day", validationAccess, getTotalForDate);
+router.get("/month/:date", validationAccess, getTotalForMonth);
 router.get("/categorys", getCategory);
 router.get("/nick", validationAccess, getNick);
 
